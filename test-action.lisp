@@ -10,10 +10,11 @@
 (defmethod action-done-p ((action test-action) (comp component))
   nil)
 
-(defmethod create-test-module-for ((module module) name)
-  (if name
-      (create-component module "tests" 'module `((:components ,name)))
-      (create-component module "tests" 'wildcard-module)))
+(defgeneric create-test-module-for (module name)
+  (:method ((module module) name)
+   (if name
+       (create-component module "tests" 'module `((:components ,name)))
+       (create-component module "tests" 'wildcard-module))))
 
 (defmethod execute ((module module) (action test-action))
   (let ((*tested-system* module))
