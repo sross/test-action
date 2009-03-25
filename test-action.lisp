@@ -27,6 +27,11 @@
   ((name :accessor name-of :initarg :name))
   (:default-initargs :needs '(load-action)))
 
+;; we probably want to figure out a simpler way of specifying this in actions
+;; something like a (:default-initargs :descendsp nil) option?
+(defmethod dependency-applicablep ((dependency dependency) (action test-action))
+  nil)
+
 (export 'test-action)
 (defvar *tested-system* nil)
 
@@ -40,9 +45,10 @@
        (create-component module "tests" 'wildcard-module))))
 
 (defmethod execute ((module module) (action test-action))
-  (let ((*tested-system* module))
-    (execute (create-test-module-for module (name-of action))
-             'load-action)))
+  (with-compilation-unit ()
+    (let ((*tested-system* module))
+      (execute (create-test-module-for module (name-of action))
+               'load-action))))
 
 
 #|
